@@ -206,43 +206,6 @@ Al primer arranque se crean las tablas y un usuario **gerente** por defecto para
 | Completada | Entregada; no modificable |
 | Cancelada | Anulada; el stock se restaura |
 
-## Estructura del proyecto
-
-```
-.
-├── app.py                          # Aplicación Flask, modelos, rutas y reportes
-├── requirements.txt                # Dependencias Python
-├── README.md                       # Este archivo
-├── productos.db                    # Base de datos SQLite (se genera al ejecutar)
-├── static/
-│   ├── css/
-│   │   └── theme.css               # Estilos personalizados
-│   └── img/
-│       └── logo-mate-imperial.svg  # Logo
-└── templates/
-    ├── base.html                   # Layout base y navegación
-    ├── index.html                  # Catálogo / listado de productos
-    ├── agregar.html                # Alta de producto
-    ├── editar.html                 # Edición de producto
-    ├── ver.html                    # Detalle de producto
-    ├── login.html                  # Inicio de sesión
-    ├── registro.html               # Registro de clientes
-    ├── usuarios.html               # Listado de usuarios
-    ├── agregar_usuario.html        # Alta de usuario
-    ├── editar_usuario.html         # Edición de usuario
-    ├── ver_usuario.html            # Detalle de usuario
-    ├── clientes.html               # Listado de clientes
-    ├── agregar_cliente.html        # Alta de cliente
-    ├── editar_cliente.html         # Edición de cliente
-    ├── ver_cliente.html            # Detalle de cliente
-    ├── carrito.html                # Carrito de compras
-    ├── checkout.html               # Confirmación de compra
-    ├── mis_ordenes.html            # Órdenes del cliente
-    ├── todas_las_ordenes.html      # Panel de órdenes (admin)
-    ├── ver_orden.html              # Detalle de orden
-    └── editar_orden.html           # Edición de orden (cliente)
-```
-
 ## Rutas principales
 
 | Ruta | Descripción | Roles |
@@ -299,8 +262,6 @@ python app.py            # Recrea tablas y usuario gerente
 - Modo **debug** habilitado por defecto (`debug=True`)
 - El carrito se almacena en la **sesión de Flask**, no en la base de datos
 - Las contraseñas se validan con mínimo 8 caracteres y al menos 1 número
-- El hash de contraseña incorpora el ID del usuario para mayor seguridad
-- La interfaz es **responsive** gracias a Bootstrap 5
 
 ---
 
