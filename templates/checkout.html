@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-shipping-fast"></i> Información de Entrega
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="direccion_entrega" class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Dirección de Entrega *
+                        </label>
+                        <textarea class="form-control" id="direccion_entrega" name="direccion_entrega" 
+                                  rows="3" required placeholder="Ingrese la dirección completa de entrega...">{{ cliente.direccion or '' }}</textarea>
+                        <div class="form-text">Ingrese la dirección completa donde desea recibir el pedido</div>
+                    </div>
+
+                    {% if cliente.direccion %}
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i> Dirección registrada: {{ cliente.direccion }}
+                        </small>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-check"></i> Confirmar Orden
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-receipt"></i> Resumen del Pedido
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6 class="mb-3">Productos:</h6>
+                <ul class="list-unstyled">
+                    {% for item in items_carrito %}
+                    <li class="mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span>{{ item.producto.nombre }} x{{ item.cantidad }}</span>
+                            <strong>${{ "%.2f"|format(item.subtotal) }}</strong>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <hr>
+                <div class="d-flex justify-content-between mb-3">
+                    <strong>Total:</strong>
+                    <strong class="text-primary fs-5">${{ "%.2f"|format(total) }}</strong>
+                </div>
+                <a href="{{ url_for('ver_carrito') }}" class="btn btn-outline-secondary btn-sm w-100">
+                    <i class="fas fa-arrow-left"></i> Volver al Carrito
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

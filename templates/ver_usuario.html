@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Detalles del Usuario - CRUD Usuarios{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-user"></i> Detalles del Usuario
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-hashtag"></i> ID:
+                            </label>
+                            <p class="form-control-plaintext">
+                                <span class="badge bg-secondary fs-6">{{ usuario.id }}</span>
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-user"></i> Nombre:
+                            </label>
+                            <p class="form-control-plaintext fs-5">{{ usuario.nombre }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-envelope"></i> Email:
+                            </label>
+                            <p class="form-control-plaintext">{{ usuario.email }}</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-user-tag"></i> Categoría:
+                            </label>
+                            <p class="form-control-plaintext">
+                                {% if usuario.categoria == 'gerente' %}
+                                    <span class="badge bg-danger fs-6">Gerente</span>
+                                {% elif usuario.categoria == 'supervisor' %}
+                                    <span class="badge bg-warning fs-6">Supervisor</span>
+                                {% elif usuario.categoria == 'usuario_comun' %}
+                                    <span class="badge bg-info fs-6">Usuario Común</span>
+                                {% elif usuario.categoria == 'cliente' %}
+                                    <span class="badge bg-success fs-6">Cliente</span>
+                                {% else %}
+                                    <span class="badge bg-light text-dark fs-6">{{ usuario.categoria }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-calendar"></i> Fecha de Creación:
+                            </label>
+                            <p class="form-control-plaintext">{{ usuario.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-lock"></i> Estado de Contraseña:
+                            </label>
+                            <p class="form-control-plaintext">
+                                <span class="badge bg-success">
+                                    <i class="fas fa-shield-alt"></i> Encriptada
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {% if usuario.categoria == 'cliente' and usuario.cliente %}
+                <hr>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        <i class="fas fa-user-tie"></i> Cliente Asociado:
+                    </label>
+                    <p class="form-control-plaintext">
+                        <a href="{{ url_for('ver_cliente', id=usuario.cliente.id) }}" class="text-decoration-none">
+                            <i class="fas fa-external-link-alt"></i> {{ usuario.cliente.nombre }} ({{ usuario.cliente.identificador }})
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="{{ url_for('usuarios') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver a la Lista
+                    </a>
+                    <a href="{{ url_for('editar_usuario', id=usuario.id) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Editar Usuario
+                    </a>
+                    <a href="{{ url_for('eliminar_usuario', id=usuario.id) }}" 
+                       class="btn btn-danger"
+                       onclick="return confirm('¿Estás seguro de que quieres eliminar este usuario?')">
+                        <i class="fas fa-trash"></i> Eliminar Usuario
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

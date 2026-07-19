@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Usuario - CRUD Usuarios{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-edit"></i> Editar Usuario
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">
+                            <i class="fas fa-user"></i> Nombre Completo
+                        </label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" 
+                               value="{{ usuario.nombre }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope"></i> Email
+                        </label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               value="{{ usuario.email }}" required>
+                        <div class="form-text">El email debe ser único en el sistema.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock"></i> Nueva Contraseña
+                        </label>
+                        <input type="password" class="form-control" id="password" name="password">
+                        <div class="form-text">
+                            <strong>Requisitos:</strong> Mínimo 8 caracteres, al menos 1 número. Deja en blanco si no quieres cambiar la contraseña actual.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">
+                            <i class="fas fa-user-tag"></i> Categoría de Usuario
+                        </label>
+                        <select class="form-select" id="categoria" name="categoria" required>
+                            <option value="usuario_comun" {% if usuario.categoria == 'usuario_comun' %}selected{% endif %}>Usuario Común</option>
+                            <option value="supervisor" {% if usuario.categoria == 'supervisor' %}selected{% endif %}>Supervisor</option>
+                            <option value="gerente" {% if usuario.categoria == 'gerente' %}selected{% endif %}>Gerente</option>
+                            <option value="cliente" {% if usuario.categoria == 'cliente' %}selected{% endif %}>Cliente</option>
+                        </select>
+                        <div class="form-text">
+                            <strong>Gerente:</strong> Acceso completo al sistema<br>
+                            <strong>Supervisor:</strong> Acceso a gestión y reportes<br>
+                            <strong>Usuario Común:</strong> Acceso básico<br>
+                            <strong>Cliente:</strong> Solo visualización de productos
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('usuarios') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save"></i> Actualizar Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const password = document.getElementById('password');
+    const form = document.querySelector('form');
+    
+    // Validación en tiempo real de la contraseña (solo si se ingresa algo)
+    password.addEventListener('input', function() {
+        const value = this.value;
+        
+        // Remover clases anteriores
+        this.classList.remove('is-valid', 'is-invalid');
+        
+        if (value.length > 0) {
+            const hasMinLength = value.length >= 8;
+            const hasNumber = /\d/.test(value);
+            
+            if (hasMinLength && hasNumber) {
+                this.classList.add('is-valid');
+            } else {
+                this.classList.add('is-invalid');
+            }
+        }
+    });
+    
+    // Validación del formulario antes del envío
+    form.addEventListener('submit', function(e) {
+        const passwordValue = password.value;
+        
+        // Solo validar si se ingresó una contraseña
+        if (passwordValue.length > 0) {
+            // Validar longitud
+            if (passwordValue.length < 8) {
+                e.preventDefault();
+                alert('La contraseña debe tener al menos 8 caracteres');
+                password.focus();
+                return false;
+            }
+            
+            // Validar número
+            if (!/\d/.test(passwordValue)) {
+                e.preventDefault();
+                alert('La contraseña debe contener al menos 1 número');
+                password.focus();
+                return false;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

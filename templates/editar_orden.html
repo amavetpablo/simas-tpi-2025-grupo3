@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Orden #{{ orden.identificador }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">
+                    <i class="fas fa-edit"></i> Editar Orden #{{ orden.identificador }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="direccion_entrega" class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Dirección de Entrega *
+                        </label>
+                        <textarea class="form-control" id="direccion_entrega" name="direccion_entrega" 
+                                  rows="3" required>{{ orden.direccion_entrega or '' }}</textarea>
+                    </div>
+
+                    <hr>
+                    <h5>Productos:</h5>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad Actual</th>
+                                    <th>Stock Disponible</th>
+                                    <th>Nueva Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ item.producto.nombre }}</strong>
+                                        <br><small class="text-muted">Tipo de Material: {{ item.producto.tipo_material }}</small>
+                                    </td>
+                                    <td>{{ item.cantidad }}</td>
+                                    <td>
+                                        {% set stock_disponible = item.producto.cantidad + item.cantidad %}
+                                        <span class="badge bg-{% if stock_disponible > 0 %}success{% else %}danger{% endif %}">
+                                            {{ stock_disponible }} ({{ item.producto.cantidad }} disponible + {{ item.cantidad }} en esta orden)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% set stock_disponible = item.producto.cantidad + item.cantidad %}
+                                        <input type="number" 
+                                               name="cantidad_{{ item.id }}" 
+                                               class="form-control" 
+                                               value="{{ item.cantidad }}" 
+                                               min="1" 
+                                               max="{{ stock_disponible }}" 
+                                               required>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('ver_orden', id=orden.id) }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Resumen</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Total Estimado:</strong> ${{ "%.2f"|format(total) }}</p>
+                <p><strong>Estado:</strong> 
+                    <span class="badge bg-warning">Pendiente de Confirmación</span>
+                </p>
+                <p><small class="text-muted">Solo puedes editar órdenes con estado "Pendiente de Confirmación"</small></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

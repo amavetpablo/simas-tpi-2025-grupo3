@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Ver Cliente - CRUD Clientes{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-eye"></i> Detalles del Cliente
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">ID</h6>
+                        <p><span class="badge bg-secondary">{{ cliente.id }}</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Identificador</h6>
+                        <p><strong>{{ cliente.identificador }}</strong></p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Tipo de Persona</h6>
+                        <p>
+                            {% if cliente.tipo_persona == 'fisica' %}
+                                <span class="badge bg-info">Persona Física</span>
+                            {% else %}
+                                <span class="badge bg-primary">Persona Jurídica</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Fecha de Creación</h6>
+                        <p>{{ cliente.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</p>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="text-muted">Nombre</h6>
+                    <p><strong>{{ cliente.nombre }}</strong></p>
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="text-muted">Dirección</h6>
+                    <p>{% if cliente.direccion %}{{ cliente.direccion }}{% else %}<span class="text-muted">No especificada</span>{% endif %}</p>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Teléfono</h6>
+                        <p>{% if cliente.telefono %}{{ cliente.telefono }}{% else %}<span class="text-muted">No especificado</span>{% endif %}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Email</h6>
+                        <p>{% if cliente.mail %}{{ cliente.mail }}{% else %}<span class="text-muted">No especificado</span>{% endif %}</p>
+                    </div>
+                </div>
+
+                {% if cliente.datos_adicionales %}
+                <div class="mb-3">
+                    <h6 class="text-muted">Datos Adicionales</h6>
+                    <p class="bg-light p-3 rounded">{{ cliente.datos_adicionales }}</p>
+                </div>
+                {% endif %}
+
+                {% if cliente.usuario %}
+                <div class="mb-3">
+                    <h6 class="text-muted">Usuario Asociado</h6>
+                    <p>
+                        <a href="{{ url_for('ver_usuario', id=cliente.usuario.id) }}" class="text-decoration-none">
+                            <i class="fas fa-user"></i> {{ cliente.usuario.nombre }} ({{ cliente.usuario.email }})
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ url_for('clientes') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver a la Lista
+                    </a>
+                    <div>
+                        <a href="{{ url_for('editar_cliente', id=cliente.id) }}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <a href="{{ url_for('eliminar_cliente', id=cliente.id) }}" 
+                           class="btn btn-danger"
+                           onclick="return confirm('¿Estás seguro de que quieres eliminar este cliente?')">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

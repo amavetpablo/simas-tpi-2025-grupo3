@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Orden #{{ orden.identificador }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-receipt"></i> Orden #{{ orden.identificador }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Fecha:</h6>
+                        <p>{{ orden.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Estado:</h6>
+                        <p>
+                            {% if orden.estado == 'pendiente_confirmacion' %}
+                                <span class="badge bg-warning">Pendiente de Confirmación</span>
+                            {% elif orden.estado == 'confirmada' %}
+                                <span class="badge bg-info">Confirmada</span>
+                            {% elif orden.estado == 'en_transito' %}
+                                <span class="badge bg-primary">En Tránsito</span>
+                            {% elif orden.estado == 'completada' %}
+                                <span class="badge bg-success">Completada</span>
+                            {% elif orden.estado == 'cancelada' %}
+                                <span class="badge bg-danger">Cancelada</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="text-muted">Cliente:</h6>
+                    <p><strong>{{ orden.cliente.nombre }}</strong></p>
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="text-muted">Dirección de Entrega:</h6>
+                    <p>{{ orden.direccion_entrega or 'No especificada' }}</p>
+                </div>
+
+                <hr>
+
+                <h5>Productos:</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Tipo de Material</th>
+                                <th>Precio Unitario</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td><strong>{{ item.producto.nombre }}</strong></td>
+                                <td>{{ item.cantidad }}</td>
+                                <td>{{ item.producto.tipo_material }}</td>
+                                {% set precio_unitario = item.producto.precio or 0 %}
+                                <td>${{ "%.2f"|format(precio_unitario) }}</td>
+                                <td><strong>${{ "%.2f"|format(precio_unitario * item.cantidad) }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-secondary">
+                                <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                                <td><strong class="text-primary fs-5">${{ "%.2f"|format(total) }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        {% if current_user and current_user.categoria in ['supervisor', 'gerente'] %}
+        {% set orden_finalizada = orden.estado in ['completada', 'cancelada'] %}
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Cambiar Estado</h5>
+            </div>
+            <div class="card-body">
+                {% if orden_finalizada %}
+                    <div class="alert alert-secondary mb-0" role="alert">
+                        Esta orden se encuentra en un estado final (<strong>{{ 'Completada' if orden.estado == 'completada' else 'Cancelada' }}</strong>) y no puede modificarse.
+                    </div>
+                {% else %}
+                    <form method="POST" action="{{ url_for('cambiar_estado_orden', id=orden.id) }}">
+                        <div class="mb-3">
+                            <label for="estado" class="form-label">Nuevo Estado:</label>
+                            <select class="form-select" id="estado" name="estado" required>
+                                <option value="pendiente_confirmacion" {% if orden.estado == 'pendiente_confirmacion' %}selected{% endif %}>Pendiente de Confirmación</option>
+                                <option value="confirmada" {% if orden.estado == 'confirmada' %}selected{% endif %}>Confirmada</option>
+                                <option value="en_transito" {% if orden.estado == 'en_transito' %}selected{% endif %}>En Tránsito</option>
+                                <option value="completada" {% if orden.estado == 'completada' %}selected{% endif %}>Completada</option>
+                                <option value="cancelada" {% if orden.estado == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save"></i> Actualizar Estado
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if current_user.categoria == 'cliente' %}
+                        <a href="{{ url_for('mis_ordenes') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver a Mis Órdenes
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('todas_las_ordenes') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver a Órdenes
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

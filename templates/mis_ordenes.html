@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Órdenes{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-4">
+            <i class="fas fa-list-alt text-primary"></i> Mis Órdenes
+        </h1>
+
+        {% if ordenes %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th># Orden</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Total</th>
+                                    <th>Dirección</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for orden in ordenes %}
+                                <tr>
+                                    <td>
+                                        <strong>#{{ orden.identificador }}</strong>
+                                    </td>
+                                    <td>{{ orden.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    <td>
+                                        {% if orden.estado == 'pendiente_confirmacion' %}
+                                            <span class="badge bg-warning">Pendiente de Confirmación</span>
+                                        {% elif orden.estado == 'confirmada' %}
+                                            <span class="badge bg-info">Confirmada</span>
+                                        {% elif orden.estado == 'en_transito' %}
+                                            <span class="badge bg-primary">En Tránsito</span>
+                                        {% elif orden.estado == 'completada' %}
+                                            <span class="badge bg-success">Completada</span>
+                                        {% elif orden.estado == 'cancelada' %}
+                                            <span class="badge bg-danger">Cancelada</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>${{ "%.2f"|format(orden.calcular_total()) }}</strong></td>
+                                    <td>
+                                        <small>{{ orden.direccion_entrega[:50] }}{% if orden.direccion_entrega|length > 50 %}...{% endif %}</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('ver_orden', id=orden.id) }}" 
+                                               class="btn btn-sm btn-outline-info" 
+                                               title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if orden.estado == 'pendiente_confirmacion' %}
+                                                <a href="{{ url_for('editar_orden', id=orden.id) }}" 
+                                                   class="btn btn-sm btn-outline-warning" 
+                                                   title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            {% endif %}
+                                            {% if orden.estado not in ['completada', 'cancelada'] %}
+                                                <a href="{{ url_for('anular_orden', id=orden.id) }}" 
+                                                   class="btn btn-sm btn-outline-danger" 
+                                                   title="Anular"
+                                                   onclick="return confirm('¿Estás seguro de que quieres anular esta orden?')">
+                                                    <i class="fas fa-times"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No tienes órdenes registradas</h4>
+                    <p class="text-muted">Comienza agregando productos al carrito</p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="fas fa-boxes"></i> Ver Productos
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+

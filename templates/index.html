@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}HERENCIA ARGENTINA - Inicio{% endblock %}
+
+{% block content %}
+<!-- Logo de Mate Imperial y Hero Section -->
+<div class="logo-container">
+    <div class="logo-finanzas">
+        <img src="{{ url_for('static', filename='img/logo-mate-imperial.svg') }}" alt="Mate Imperial" class="logo-mate-img">
+    </div>
+    <h1 class="logo-title">HERENCIA ARGENTINA</h1>
+    <p class="logo-subtitle">No te calentes, tomate un mate</p>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-boxes text-primary"></i> Lista de Productos
+            </h1>
+            {% if current_user and current_user.categoria in ['supervisor', 'gerente'] %}
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalReporte">
+                        <i class="fas fa-file-export"></i> Generar Reporte
+                    </button>
+                    <a href="{{ url_for('agregar_producto') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Agregar Producto
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if productos %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    {% if current_user %}
+                                        <th>Cantidad</th>
+                                    {% endif %}
+                                    <th>Tipo de Material</th>
+                                    <th>Precio</th>
+                                    {% if current_user and current_user.categoria not in ['cliente'] %}
+                                        <th>Proveedor</th>
+                                    {% endif %}
+                                    <th>Fecha Creación</th>
+                                    <th>{% if current_user and current_user.categoria == 'cliente' %}Cantidad a comprar{% else %}Acciones{% endif %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for producto in productos %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ producto.id }}</span>
+                                    </td>
+                                    <td>
+                                        <strong>{{ producto.nombre }}</strong>
+                                        {% if producto.descripcion %}
+                                            <br><small class="text-muted">{{ producto.descripcion[:50] }}{% if producto.descripcion|length > 50 %}...{% endif %}</small>
+                                        {% endif %}
+                                    </td>
+                                    {% if current_user %}
+                                        <td>
+                                            <span class="badge bg-{% if producto.cantidad > 10 %}success{% elif producto.cantidad > 5 %}warning{% else %}danger{% endif %}">
+                                                {{ producto.cantidad }}
+                                            </span>
+                                        </td>
+                                    {% endif %}
+                                    <td>{{ producto.tipo_material }}</td>
+                                    <td><strong>${{ "%.2f"|format(producto.precio) }}</strong></td>
+                                    {% if current_user and current_user.categoria not in ['cliente'] %}
+                                        <td>{{ producto.proveedor }}</td>
+                                    {% endif %}
+                                    <td>{{ producto.fecha_creacion.strftime('%d/%m/%Y') }}</td>
+                                    <td>
+                                        {% if current_user and current_user.categoria in ['supervisor', 'gerente'] %}
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ url_for('ver_producto', id=producto.id) }}" 
+                                                   class="btn btn-sm btn-outline-info" 
+                                                   title="Ver detalles">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ url_for('editar_producto', id=producto.id) }}" 
+                                                   class="btn btn-sm btn-outline-warning" 
+                                                   title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{{ url_for('eliminar_producto', id=producto.id) }}" 
+                                                   class="btn btn-sm btn-outline-danger" 
+                                                   title="Eliminar"
+                                                   onclick="return confirm('¿Estás seguro de que quieres eliminar este producto?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        {% elif current_user and current_user.categoria == 'cliente' %}
+                                            {% if producto.cantidad > 0 %}
+                                                <form method="POST" action="{{ url_for('agregar_al_carrito', producto_id=producto.id) }}" class="d-inline">
+                                                    <div class="input-group input-group-sm" style="width: 180px;">
+                                                        <input type="number" name="cantidad" class="form-control" value="1" min="1" max="{{ producto.cantidad }}" required id="cantidad_{{ producto.id }}" onchange="validarCantidad({{ producto.id }}, {{ producto.cantidad }})">
+                                                        <button type="submit" class="btn btn-primary" title="Agregar al carrito">
+                                                            <i class="fas fa-cart-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                    <small class="text-muted d-block mt-1">Stock disponible: {{ producto.cantidad }}</small>
+                                                </form>
+                                            {% else %}
+                                                <span class="badge bg-danger">Sin stock</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle"></i> 
+                    Total de productos: {{ productos|length }}
+                </small>
+            </div>
+        {% else %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay productos registrados</h4>
+                    {% if current_user and current_user.categoria in ['supervisor', 'gerente'] %}
+                        <p class="text-muted">Comienza agregando tu primer producto al sistema.</p>
+                        <a href="{{ url_for('agregar_producto') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Agregar Primer Producto
+                        </a>
+                    {% else %}
+                        <p class="text-muted">No hay productos disponibles en este momento.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if current_user and current_user.categoria in ['supervisor', 'gerente'] %}
+<!-- Modal para Generar Reporte -->
+<div class="modal fade" id="modalReporte" tabindex="-1" aria-labelledby="modalReporteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalReporteLabel">
+                    <i class="fas fa-file-export"></i> Generar Reporte de Productos
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formReporte" method="GET" action="{{ url_for('generar_reporte_productos') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="formato" class="form-label">Formato del Reporte</label>
+                        <select class="form-select" id="formato" name="formato" required>
+                            <option value="">Seleccione un formato</option>
+                            <option value="excel">Excel (.xlsx)</option>
+                            <option value="pdf">PDF (.pdf)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="stock_minimo" class="form-label">Stock Mínimo</label>
+                            <input type="number" class="form-control" id="stock_minimo" name="stock_minimo" step="1" min="0" placeholder="0">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="stock_maximo" class="form-label">Stock Máximo</label>
+                            <input type="number" class="form-control" id="stock_maximo" name="stock_maximo" step="1" min="0" placeholder="Sin límite">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="precio_minimo" class="form-label">Precio Mínimo ($/unidad)</label>
+                            <input type="number" class="form-control" id="precio_minimo" name="precio_minimo" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="precio_maximo" class="form-label">Precio Máximo ($/unidad)</label>
+                            <input type="number" class="form-control" id="precio_maximo" name="precio_maximo" step="0.01" min="0" placeholder="Sin límite">
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        <small>Deje los campos vacíos para incluir todos los productos sin filtros.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-download"></i> Generar Reporte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function validarCantidad(productoId, stockDisponible) {
+    const input = document.getElementById('cantidad_' + productoId);
+    if (!input) return;
+    
+    const cantidad = parseInt(input.value);
+    
+    if (cantidad < 1) {
+        input.value = 1;
+        alert('La cantidad mínima es 1');
+    } else if (cantidad > stockDisponible) {
+        input.value = stockDisponible;
+        alert('La cantidad no puede superar el stock disponible: ' + stockDisponible);
+    }
+}
+</script>
+{% endblock %}
+

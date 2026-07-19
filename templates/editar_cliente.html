@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Cliente - CRUD Clientes{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">
+                    <i class="fas fa-edit"></i> Editar Cliente
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="identificador" class="form-label">
+                            <i class="fas fa-id-card"></i> Identificador *
+                        </label>
+                        <input type="text" class="form-control" id="identificador" name="identificador" 
+                               value="{{ cliente.identificador }}" required>
+                        <div class="form-text">Identificador único del cliente (DNI, CUIT, etc.)</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tipo_persona" class="form-label">
+                                <i class="fas fa-user-friends"></i> Tipo de Persona *
+                            </label>
+                            <select class="form-select" id="tipo_persona" name="tipo_persona" required>
+                                <option value="fisica" {% if cliente.tipo_persona == 'fisica' %}selected{% endif %}>Persona Física</option>
+                                <option value="juridica" {% if cliente.tipo_persona == 'juridica' %}selected{% endif %}>Persona Jurídica</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nombre" class="form-label">
+                                <i class="fas fa-user"></i> Nombre *
+                            </label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                   value="{{ cliente.nombre }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Dirección
+                        </label>
+                        <input type="text" class="form-control" id="direccion" name="direccion" 
+                               value="{{ cliente.direccion or '' }}" 
+                               placeholder="Ej: Calle Falsa 123, CABA">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="telefono" class="form-label">
+                                <i class="fas fa-phone"></i> Teléfono
+                            </label>
+                            <input type="text" class="form-control" id="telefono" name="telefono" 
+                                   value="{{ cliente.telefono or '' }}" 
+                                   placeholder="Ej: +54 11 1234-5678">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="mail" class="form-label">
+                                <i class="fas fa-envelope"></i> Email
+                            </label>
+                            <input type="email" class="form-control" id="mail" name="mail" 
+                                   value="{{ cliente.mail or '' }}" 
+                                   placeholder="cliente@ejemplo.com">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="datos_adicionales" class="form-label">
+                            <i class="fas fa-info-circle"></i> Datos Adicionales
+                        </label>
+                        <textarea class="form-control" id="datos_adicionales" name="datos_adicionales" 
+                                  rows="4" placeholder="Información adicional sobre el cliente...">{{ cliente.datos_adicionales or '' }}</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('clientes') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save"></i> Actualizar Cliente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

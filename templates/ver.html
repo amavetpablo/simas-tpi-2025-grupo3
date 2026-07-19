@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Detalles del Producto - CRUD Productos{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-eye"></i> Detalles del Producto
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-hashtag"></i> ID del Producto:
+                            </label>
+                            <p class="form-control-plaintext">
+                                <span class="badge bg-secondary fs-6">{{ producto.id }}</span>
+                            </p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-tag"></i> Nombre:
+                            </label>
+                            <p class="form-control-plaintext fs-5">{{ producto.nombre }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-cubes"></i> Cantidad:
+                            </label>
+                            <p class="form-control-plaintext">
+                                <span class="badge bg-{% if producto.cantidad > 10 %}success{% elif producto.cantidad > 5 %}warning{% else %}danger{% endif %} fs-6">
+                                    {{ producto.cantidad }} unidades
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-cube"></i> Tipo de Material:
+                            </label>
+                            <p class="form-control-plaintext fs-5">{{ producto.tipo_material }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-truck"></i> Proveedor:
+                            </label>
+                            <p class="form-control-plaintext fs-5">{{ producto.proveedor }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-calendar"></i> Fecha de Creación:
+                            </label>
+                            <p class="form-control-plaintext">{{ producto.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if producto.descripcion %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        <i class="fas fa-align-left"></i> Descripción:
+                    </label>
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <p class="mb-0">{{ producto.descripcion }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver a la Lista
+                    </a>
+                    <div>
+                        <a href="{{ url_for('editar_producto', id=producto.id) }}" class="btn btn-warning me-2">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <a href="{{ url_for('eliminar_producto', id=producto.id) }}" 
+                           class="btn btn-danger"
+                           onclick="return confirm('¿Estás seguro de que quieres eliminar este producto?')">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
