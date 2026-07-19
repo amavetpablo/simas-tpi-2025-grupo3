@@ -1,6 +1,6 @@
 # HERENCIA ARGENTINA — Sistema de Inventario y Marketplace
 
-Aplicación web desarrollada con **Flask** y **SQLite** para la gestión integral de un negocio de venta de mates y yerba. El proyecto evolucionó desde un CRUD básico de productos hacia una plataforma completa que combina **control de inventario**, **administración de usuarios y clientes**, **marketplace con carrito de compras** y **generación de reportes** en Excel y PDF.
+Aplicación web desarrollada con **Flask** y **SQLite** para la gestión integral de un negocio de venta de mates y yerba en el contexto de la asignatura "Sistemas de Información para la Manufactura". El proyecto evolucionó desde un CRUD básico de productos hacia una plataforma completa que combina **control de inventario**, **administración de usuarios y clientes**, **marketplace con carrito de compras** y **generación de reportes** en Excel y PDF.
 
 ## Descripción general
 
@@ -10,6 +10,11 @@ Aplicación web desarrollada con **Flask** y **SQLite** para la gestión integra
 - **Supervisores y gerentes**: administrar stock, usuarios, clientes, órdenes de compra y exportar reportes operativos.
 
 El stock se descuenta automáticamente al confirmar una compra y se restaura cuando una orden es anulada o cancelada.
+
+## Autores:
+- **Amavet, Pablo**
+- **Botto, Santiago**
+- **Paulon, Valentin**
 
 ## Características principales
 
